@@ -1,6 +1,7 @@
 ## Map file structure
 
 First line: The number of columns and rows of cells of the map. Make sure to also change the width and height of the window (see line 5 of pacman.pde)
+
 Second line: Each of the two numbers set the following: 
 
 - X and Y value of the player's starting point
