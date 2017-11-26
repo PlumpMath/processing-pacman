@@ -174,7 +174,10 @@ void redAI(Ghost g) {
     dumbAI(g);
   } else {
     if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
-      if(g.homeLeaveTime>System.nanoTime()) dumbAI(g);
+      if(g.homeLeaveTime>System.nanoTime()) {
+        if(!g.moving) g.direction+=2;
+        g.direction%=4;
+      }
       else g.direction = getMoveDirection(houseFrontX,houseFrontY,floor(g.x+0.5),floor(g.y+0.5));
       g.moving = true;
       return;
@@ -201,7 +204,10 @@ void pinkAI(Ghost g) {
     dumbAI(g); 
   } else {
     if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
-      if(g.homeLeaveTime>System.nanoTime()) dumbAI(g);
+      if(g.homeLeaveTime>System.nanoTime()) {
+        if(!g.moving) g.direction+=2;
+        g.direction%=4;
+      }
       else g.direction = getMoveDirection(houseFrontX,houseFrontY,floor(g.x+0.5),floor(g.y+0.5));
       g.moving = true;
       return;
@@ -236,7 +242,10 @@ void orangeAI(Ghost g) {
     dumbAI(g); 
   } else {
     if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
-      if(g.homeLeaveTime>System.nanoTime()) dumbAI(g);
+      if(g.homeLeaveTime>System.nanoTime()) {
+        if(!g.moving) g.direction+=2;
+        g.direction%=4;
+      }
       else g.direction = getMoveDirection(houseFrontX,houseFrontY,floor(g.x+0.5),floor(g.y+0.5));
       g.moving = true;
       return;

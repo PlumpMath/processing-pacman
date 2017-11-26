@@ -13,8 +13,8 @@ enum MapType {
 // Constants
 // up right down left
 final int[] dx = {0, 1, 0, -1, 0}, dy={-1, 0, 1, 0, 0};
-final int CELL_SIZE = 10;
-final int CELL_W=60, CELL_H=60;
+int CELL_SIZE = 10;
+int CELL_W, CELL_H, PADDING_X, PADDING_Y;
 final float FOOD_SIZE_RATIO = 0.3;
 final float BLINK_SIZE_RATIO = 0.6;
 

@@ -41,6 +41,7 @@ class Player extends Entity {
     if(food[nearestX][nearestY]) {
       food[nearestX][nearestY] = false;
       this.score+=foodScore;
+      foodCount--;
     }
     if(blink[nearestX][nearestY]) {
       blink[nearestX][nearestY] = false;
@@ -56,6 +57,7 @@ class Player extends Entity {
     this.life--;
   }
   public void revive() {
+    if(life<=0) return;
     this.x=this.startX;
     this.y=this.startY;
     this.direction=4;
@@ -65,6 +67,7 @@ class Player extends Entity {
   @Override
   public PImage getSprite() {
     if(this.dead) {
+      if(life<=0) return new PImage();
       int index=(int)((System.nanoTime()-lastDieTime)/100000000);
       if(index>=15) revive();
       else {

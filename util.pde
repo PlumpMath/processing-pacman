@@ -1,10 +1,10 @@
 void drawChessBoard() {
   noStroke();
   rectMode(CORNER);
-  for(int i=0;i<CELL_H;i++) {
-    for(int j=0;j<CELL_W;j++) {
+  for(int i=0;i<CELL_W;i++) {
+    for(int j=0;j<CELL_H;j++) {
       fill((i+j)%2==1?200:120);
-      rect((i+0.5)*CELL_SIZE,(j+0.5)*CELL_SIZE,CELL_SIZE,CELL_SIZE);
+      rect((i+0.5)*CELL_SIZE+PADDING_X,(j+0.5)*CELL_SIZE+PADDING_Y,CELL_SIZE,CELL_SIZE);
     }
   }
 }
@@ -24,7 +24,7 @@ void drawPlayerInfo() {
 }
 void drawSprite(PImage img, float x, float y) {
   imageMode(CENTER);
-  image(img, (x+1)*CELL_SIZE, (y+1)*CELL_SIZE, 1.8*CELL_SIZE, 1.8*CELL_SIZE);
+  image(img, (x+1)*CELL_SIZE+PADDING_X, (y+1)*CELL_SIZE+PADDING_Y, 1.8*CELL_SIZE, 1.8*CELL_SIZE);
 }
 // Checks if the cell given is in the map. 
 boolean cellInMap(int x, int y) {
@@ -294,4 +294,10 @@ boolean isIntersection(int x, int y) {
     if(cellEmpty(x+dx[i],y+dy[i])) cnt++;  
   }
   return cnt>=3;
+}
+int getScreenWidth() {
+  return width; 
+}
+int getScreenHeight() {
+  return height; 
 }

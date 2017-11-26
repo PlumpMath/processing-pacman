@@ -5,7 +5,8 @@ First line: The number of columns and rows of cells of the map. Make sure to als
 
 Second line: Each of the two numbers set the following: 
 
-- X and Y value of the player's starting point
+- X and Y value of the player 1's starting point
+- X and Y value of the player 2's starting point
 - X and Y value of the red ghost's starting point
 - X and Y value of the pink ghost's starting point
 - X and Y value of the blue ghost's starting point

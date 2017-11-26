@@ -2,6 +2,7 @@
 int blinkTick;
 long blinkEndTime;
 int level;
+int totalFoodCount=0,foodCount;
 
 //Map & Player instances
 Player[] players;
@@ -29,18 +30,33 @@ void drawUI() {
   rect(0,height-100,width,100);
   imageMode(CORNER);
   for(int i=0;i<players[0].life;i++) image(pSprites[1][0],30+30*i,height-90,24,24); 
-  for(int i=0;i<players[1].life;i++) image(p2Sprites[1][0],width/3+30+30*i,height-90,24,24); 
+  for(int i=0;i<players[1].life;i++) image(p2Sprites[1][0],width/3+30+30*i,height-90,24,24);
+  fill(255,0,0);
+  textSize(22);
+  if(players[0].life<=0) text("GAME OVER",30,height-70);
+  if(players[1].life<=0) text("GAME OVER",width/3+30,height-70);
   fill(255);
   textSize(32);
   text("1P: "+players[0].score,30,height-30);
   text("2P: "+players[1].score,width/3+30,height-30);
+  textSize(45);
+  text((players[0].score+players[1].score),2*width/3+60,height-40);
 }
 void loadMap() {
+  String[] lines = loadStrings("map.txt");
+  String[] locs = lines[1].split(" ");
+  String[] sizes = lines[0].split(" ");
+  CELL_W=int(sizes[0]);
+  CELL_H=int(sizes[1]);
+  
+  int h_cell=floor(((float)(height-100))/CELL_H), w_cell=floor(((float)width)/CELL_W);
+  CELL_SIZE=h_cell<w_cell?h_cell:w_cell;
+  PADDING_X = (width-CELL_W*CELL_SIZE)/2;
+  PADDING_Y = (height-100-CELL_H*CELL_SIZE)/2;
+  
   map=new MapType[CELL_W][CELL_H];
   food=new Boolean[CELL_W][CELL_H];
   blink=new Boolean[CELL_W][CELL_H];
-  String[] lines = loadStrings("map.txt");
-  String[] locs = lines[1].split(" ");
   
   players = new Player[]{new Player(int(locs[1]), int(locs[0]), 1), new Player(int(locs[3]), int(locs[2]), 2)};
   
@@ -71,6 +87,7 @@ void loadMap() {
         case 3:
           map[j][i]=MapType.ROAD;
           food[j][i]=true;
+          totalFoodCount++;
           break;
         case 4:
           map[j][i]=MapType.BLINK;
@@ -82,6 +99,7 @@ void loadMap() {
       }
     }
   }
+  foodCount=totalFoodCount;
 }
 void drawGame() {
   blinkTick++;
@@ -94,7 +112,7 @@ void drawGame() {
       if(map[i][j] == MapType.WALL) fill(0,0,255);
       else if(map[i][j] == MapType.ENTRANCE) fill(254,165,165);
       else noFill();
-      rect((i+0.5)*CELL_SIZE,(j+0.5)*CELL_SIZE,CELL_SIZE,CELL_SIZE);
+      rect((i+0.5)*CELL_SIZE+PADDING_X,(j+0.5)*CELL_SIZE+PADDING_Y,CELL_SIZE,CELL_SIZE);
     }
   }
   //Draw Food & Blinks
@@ -103,8 +121,8 @@ void drawGame() {
   fill(foodColor);
   for(int i=0;i<CELL_W;i++) {
     for(int j=0;j<CELL_H;j++) {
-      if(food[i][j]) rect((i+1)*CELL_SIZE,(j+1)*CELL_SIZE,CELL_SIZE*FOOD_SIZE_RATIO,CELL_SIZE*FOOD_SIZE_RATIO);
-      if(blinkTick<5 && blink[i][j]) ellipse((i+1)*CELL_SIZE,(j+1)*CELL_SIZE,CELL_SIZE*BLINK_SIZE_RATIO,CELL_SIZE*BLINK_SIZE_RATIO);
+      if(food[i][j]) rect((i+1)*CELL_SIZE+PADDING_X,(j+1)*CELL_SIZE+PADDING_Y,CELL_SIZE*FOOD_SIZE_RATIO,CELL_SIZE*FOOD_SIZE_RATIO);
+      if(blinkTick<5 && blink[i][j]) ellipse((i+1)*CELL_SIZE+PADDING_X,(j+1)*CELL_SIZE+PADDING_Y,CELL_SIZE*BLINK_SIZE_RATIO,CELL_SIZE*BLINK_SIZE_RATIO);
     }
   }
   for(int i=0;i<2;i++) drawSprite(players[i].getSprite(),players[i].x,players[i].y); 
