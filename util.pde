@@ -11,16 +11,16 @@ void drawChessBoard() {
 void drawPlayerInfo() {
   rectMode(CORNERS);
   fill(10);
-  rect(180,220,380,300);
+  rect(180,620,380,300);
   fill(230);
-  text("     player.x: "+player.x,200,200);
-  text("   player.dir: "+player.direction,200,220);
-  text("     player.y: "+player.y,200,240);
-  text("player.moving: "+(player.moving?"True":"False"),200,260);
-  text(" player.score: "+player.score,200,280);
-  text("    blinkTime: "+blinkTimeRemaining()+"ms",200,300);
+  //text("     player.x: "+player.x,200,400);
+  //text("   player.dir: "+player.direction,200,420);
+  //text("     player.y: "+player.y,200,440);
+  //text("player.moving: "+(player.moving?"True":"False"),200,460);
+  //text(" player.score: "+player.score,200,480);
+  //text("    blinkTime: "+blinkTimeRemaining()+"ms",200,500);
   //text(System.nanoTime(),200,320);
-  text(ghosts[0].direction,200,320);
+  //text(ghosts[0].direction,200,520);
 }
 void drawSprite(PImage img, float x, float y) {
   imageMode(CENTER);
@@ -179,7 +179,7 @@ int getMoveAwayDirection(int startX, int startY, int endX, int endY) {
       }
     }
   }
-  return -1;
+  return -1; //<>//
 }
 int getDistance(int startX, int startY, int endX, int endY) {
   ArrayList<int[]> ret = new ArrayList<int[]>();
@@ -207,11 +207,91 @@ int getDistance(int startX, int startY, int endX, int endY) {
       }
     }
   }
+  return -1; //<>//
+}
+int getPlayerMinDistance(int startX, int startY) {
+  ArrayList<int[]> ret = new ArrayList<int[]>();
+  int[][] dist = new int[CELL_W][CELL_H];
+  boolean[][] visited = new boolean[CELL_W][CELL_H];
+  for(int i=0;i<CELL_W;i++) {
+    for(int j=0;j<CELL_H;j++) {
+      visited[i][j]=false;
+    }
+  }
+  dist[startX][startY]=0;
+  Queue<int[]> bfs=new LinkedList<int[]>();
+  bfs.add(new int[]{startX,startY});
+  while(!bfs.isEmpty()) {
+    int[] now = bfs.poll();
+    if(visited[now[0]][now[1]]) continue;
+    visited[now[0]][now[1]]=true;
+    for(int i=0;i<players.length;i++) {
+      if(players[i].dead) continue;
+      if(now[0] == floor(players[i].x+0.5) && now[1] == floor(players[i].y+0.5)) {
+        return dist[now[0]][now[1]];
+      }
+    }
+    for(int i=0;i<4;i++) {
+      if(now[0]+dx[i]>=0&&now[0]+dx[i]<CELL_W&&now[1]+dy[i]>=0&&now[1]+dy[i]<CELL_H&&cellEmptyGhost(now[0]+dx[i],now[1]+dy[i])&&!visited[now[0]+dx[i]][now[1]+dy[i]]) {
+        dist[now[0]+dx[i]][now[1]+dy[i]]=dist[now[0]][now[1]]+1;
+        bfs.add(new int[]{now[0]+dx[i],now[1]+dy[i]});
+      }
+    }
+  }
+  return -1;
+}
+int getNearestPlayer(int startX, int startY) {
+  ArrayList<int[]> ret = new ArrayList<int[]>();
+  int[][] dist = new int[CELL_W][CELL_H];
+  boolean[][] visited = new boolean[CELL_W][CELL_H];
+  for(int i=0;i<CELL_W;i++) {
+    for(int j=0;j<CELL_H;j++) {
+      visited[i][j]=false;
+    }
+  }
+  dist[startX][startY]=0;
+  Queue<int[]> bfs=new LinkedList<int[]>();
+  bfs.add(new int[]{startX,startY});
+  while(!bfs.isEmpty()) {
+    int[] now = bfs.poll();
+    if(visited[now[0]][now[1]]) continue;
+    visited[now[0]][now[1]]=true;
+    for(int i=0;i<players.length;i++) {
+      if(players[i].dead) continue;
+      if(now[0] == floor(players[i].x+0.5) && now[1] == floor(players[i].y+0.5)) {
+        return i;
+      }
+    }
+    for(int i=0;i<4;i++) {
+      if(now[0]+dx[i]>=0&&now[0]+dx[i]<CELL_W&&now[1]+dy[i]>=0&&now[1]+dy[i]<CELL_H&&cellEmptyGhost(now[0]+dx[i],now[1]+dy[i])&&!visited[now[0]+dx[i]][now[1]+dy[i]]) {
+        dist[now[0]+dx[i]][now[1]+dy[i]]=dist[now[0]][now[1]]+1;
+        bfs.add(new int[]{now[0]+dx[i],now[1]+dy[i]});
+      }
+    }
+  }
   return -1;
 }
 int getGotoPlayerDirection(int startX,int startY) {
-  return getMoveDirection(floor(player.x+0.5),floor(player.y+0.5),startX,startY); 
+  int nearestPlayer = getNearestPlayer(startX, startY);
+  return getMoveDirection(floor(players[nearestPlayer].x+0.5),floor(players[nearestPlayer].y+0.5),startX,startY); 
+}
+int getRunFromPlayerDirection(int startX,int startY) {
+  int nearestPlayer = getNearestPlayer(startX, startY);
+  return getMoveAwayDirection(floor(players[nearestPlayer].x+0.5),floor(players[nearestPlayer].y+0.5),startX,startY); 
 }
 boolean insideHouse(int x,int y) {
   return map[x][y]==MapType.HOUSE||map[x][y]==MapType.ENTRANCE; 
+}
+boolean allPlayersDead() {
+  for(int i=0;i<players.length;i++) {
+    if(!players[i].dead) return false; 
+  }
+  return true;
+}
+boolean isIntersection(int x, int y) {
+  int cnt=0;
+  for(int i=0;i<4;i++) {
+    if(cellEmpty(x+dx[i],y+dy[i])) cnt++;  
+  }
+  return cnt>=3;
 }

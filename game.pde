@@ -4,7 +4,7 @@ long blinkEndTime;
 int level;
 
 //Map & Player instances
-Player player;
+Player[] players;
 Boolean[][] food, blink;
 MapType[][] map;
 int houseFrontX, houseFrontY;
@@ -17,9 +17,23 @@ void setupGame() {
   
 }
 void gameTick() {
-  checkCollision(player);
-  player.move();
+  for(int i=0;i<2;i++) {
+    checkCollision(players[i]);
+    players[i].move();
+  }
   for(int i=0;i<4;i++) ghosts[i].move();
+}
+void drawUI() {
+  fill(50);
+  rectMode(CORNER);
+  rect(0,height-100,width,100);
+  imageMode(CORNER);
+  for(int i=0;i<players[0].life;i++) image(pSprites[1][0],30+30*i,height-90,24,24); 
+  for(int i=0;i<players[1].life;i++) image(p2Sprites[1][0],width/3+30+30*i,height-90,24,24); 
+  fill(255);
+  textSize(32);
+  text("1P: "+players[0].score,30,height-30);
+  text("2P: "+players[1].score,width/3+30,height-30);
 }
 void loadMap() {
   map=new MapType[CELL_W][CELL_H];
@@ -28,20 +42,20 @@ void loadMap() {
   String[] lines = loadStrings("map.txt");
   String[] locs = lines[1].split(" ");
   
-  player = new Player(int(locs[1]), int(locs[0]));
+  players = new Player[]{new Player(int(locs[1]), int(locs[0]), 1), new Player(int(locs[3]), int(locs[2]), 2)};
   
   ghosts = new Ghost[]{new RedGhost(), new PinkGhost(), new BlueGhost(), new OrangeGhost()};
   for(int i=0;i<4;i++) {
-    ghosts[i].x=int(locs[2*i+2]);
-    ghosts[i].y=int(locs[2*i+3]);
-    ghosts[i].startX=int(locs[2*i+2]);
-    ghosts[i].startY=int(locs[2*i+3]);
+    ghosts[i].x=int(locs[2*i+4]);
+    ghosts[i].y=int(locs[2*i+5]);
+    ghosts[i].startX=int(locs[2*i+4]);
+    ghosts[i].startY=int(locs[2*i+5]);
   }
-  houseFrontX=int(locs[10]);
-  houseFrontY=int(locs[11]);
+  houseFrontX=int(locs[12]);
+  houseFrontY=int(locs[13]);
   for(int i=0;i<CELL_H;i++) {
     String[] sp = lines[i+2].split(" ");
-    for(int j=0;j<sp.length;j++) {
+    for(int j=0;j<CELL_W;j++) {
       food[j][i]=false;
       blink[j][i]=false;
       switch(Integer.parseInt(sp[j])) {
@@ -93,10 +107,8 @@ void drawGame() {
       if(blinkTick<5 && blink[i][j]) ellipse((i+1)*CELL_SIZE,(j+1)*CELL_SIZE,CELL_SIZE*BLINK_SIZE_RATIO,CELL_SIZE*BLINK_SIZE_RATIO);
     }
   }
-  drawSprite(player.getSprite(),player.x,player.y); 
-  for(int i=0;i<4;i++) {
-    drawSprite(ghosts[i].getSprite(),ghosts[i].x,ghosts[i].y); 
-  }
+  for(int i=0;i<2;i++) drawSprite(players[i].getSprite(),players[i].x,players[i].y); 
+  for(int i=0;i<4;i++) drawSprite(ghosts[i].getSprite(),ghosts[i].x,ghosts[i].y); 
 }
 
 void checkCollision(Player p) {
@@ -104,13 +116,12 @@ void checkCollision(Player p) {
     Ghost other=ghosts[i];
     if(other.dead) continue;
     if(dist(p.x,p.y,other.x,other.y)<=1) {
-      println("Collision with ghost "+other.ghostID); 
       if(other.dead||p.dead) continue;
       if(other.blinking()) {
         other.die();
-        player.killed(); 
+        p.killed(); 
       } else {
-        player.die();
+        p.die();
       }
     }
   }

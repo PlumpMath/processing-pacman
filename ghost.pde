@@ -154,14 +154,23 @@ class OrangeGhost extends Ghost {
 }
 //Ghost AI Functions
 void dumbAI(Ghost gh) {
+  if(floor(gh.x+gh.y)==0 || insideHouse(floor(gh.x+0.5),floor(gh.y+0.5))) return;
   if(!gh.moving) {
-    gh.direction+=3;
-    gh.direction%=4;
+    while(!cellEmpty(floor(gh.x+dx[gh.direction]+0.5),floor(gh.y+dy[gh.direction]+0.5))) {
+      gh.direction=floor(random(4)); 
+    }
     gh.moving=true;
+  }
+  else if(isIntersection(floor(gh.x+0.5),floor(gh.y+0.5))) {
+    int dir = (random(1)>0.5)?3:1;
+    while(!cellEmpty(floor(gh.x+dx[gh.direction]+0.5),floor(gh.y+dy[gh.direction]+0.5))) {
+      gh.direction+=dir;
+      gh.direction%=4;
+    }
   }
 }
 void redAI(Ghost g) {
-  if(player.dead) {
+  if(allPlayersDead()) {
     dumbAI(g);
   } else {
     if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
@@ -188,46 +197,7 @@ void redAI(Ghost g) {
   }
 }
 void pinkAI(Ghost g) {
-  if(player.dead) {
-    dumbAI(g); 
-  } else {
-    if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
-      if(g.homeLeaveTime>System.nanoTime()) dumbAI(g);
-      else g.direction = getMoveDirection(houseFrontX,houseFrontY,floor(g.x+0.5),floor(g.y+0.5));
-      g.moving = true; //<>//
-      return;
-    }
-    if(g.blinking()) {
-      if(!g.moving) {
-        while(!cellEmptyGhost(floor(g.x+dx[g.direction]+0.5),floor(g.y+dy[g.direction]+0.5))) {
-          g.direction=floor(random(4));
-        }
-        g.moving=true;
-      }
-    }
-    else {
-      int dist = getDistance(floor(g.x+0.5),floor(g.y+0.5),floor(player.x+0.5),floor(player.y+0.5));
-      if(dist>8) {
-        if(!g.moving) {
-          while(!cellEmptyGhost(floor(g.x+dx[g.direction]+0.5),floor(g.y+dy[g.direction]+0.5))) {
-            g.direction=floor(random(4));
-          }
-        }
-      } else if(dist<3) {
-        g.runningAway=35;
-      } else {
-         g.direction = getGotoPlayerDirection(floor(g.x+0.5),floor(g.y+0.5));
-      }
-      if(g.runningAway>0) {
-        g.direction = getMoveAwayDirection(floor(player.x+0.5),floor(player.y+0.5),floor(g.x+0.5),floor(g.y+0.5));
-        g.runningAway--;
-      }
-      g.moving=true;
-    }
-  }
-}
-void orangeAI(Ghost g) {
-  if(player.dead) {
+  if(allPlayersDead()) {
     dumbAI(g); 
   } else {
     if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
@@ -245,13 +215,44 @@ void orangeAI(Ghost g) {
       }
     }
     else {
-      int dist = getDistance(floor(g.x+0.5),floor(g.y+0.5),floor(player.x+0.5),floor(player.y+0.5));
+      int dist = getPlayerMinDistance(floor(g.x+0.5),floor(g.y+0.5));
       if(dist>8) {
-        if(!g.moving) {
-          while(!cellEmptyGhost(floor(g.x+dx[g.direction]+0.5),floor(g.y+dy[g.direction]+0.5))) {
-            g.direction=floor(random(4));
-          }
+        dumbAI(g); 
+      } else if(dist<3) {
+        g.runningAway=35;
+      } else {
+         g.direction = getGotoPlayerDirection(floor(g.x+0.5),floor(g.y+0.5));
+      }
+      if(g.runningAway>0) {
+        g.direction = getRunFromPlayerDirection(floor(g.x+0.5),floor(g.y+0.5));
+        g.runningAway--;
+      }
+      g.moving=true;
+    }
+  }
+}
+void orangeAI(Ghost g) {
+  if(allPlayersDead()) {
+    dumbAI(g); 
+  } else {
+    if(insideHouse(floor(g.x+0.5),floor(g.y+0.5))) {
+      if(g.homeLeaveTime>System.nanoTime()) dumbAI(g);
+      else g.direction = getMoveDirection(houseFrontX,houseFrontY,floor(g.x+0.5),floor(g.y+0.5));
+      g.moving = true;
+      return;
+    }
+    if(g.blinking()) {
+      if(!g.moving) {
+        while(!cellEmptyGhost(floor(g.x+dx[g.direction]+0.5),floor(g.y+dy[g.direction]+0.5))) {
+          g.direction=floor(random(4));
         }
+        g.moving=true;
+      }
+    }
+    else {
+      int dist = getPlayerMinDistance(floor(g.x+0.5),floor(g.y+0.5));
+      if(dist>8) {
+        dumbAI(g); 
       } else {
          g.direction = getGotoPlayerDirection(floor(g.x+0.5),floor(g.y+0.5));
       }

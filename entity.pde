@@ -38,6 +38,6 @@ class Entity {
     return null;
   }
   void stopped() {
-    println("Shit!"+System.nanoTime());
+    
   }
 }

@@ -1,4 +1,5 @@
 ## Map file structure
+The map file is located under data/map.txt, and is a plain text file holding the information of the map and the entity's initial locations.
 
 First line: The number of columns and rows of cells of the map. Make sure to also change the width and height of the window (see line 5 of pacman.pde)
 
