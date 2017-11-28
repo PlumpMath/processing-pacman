@@ -32,18 +32,20 @@ void drawUI() {
   for(int i=0;i<players[0].life;i++) image(pSprites[1][0],30+30*i,height-90,24,24); 
   for(int i=0;i<players[1].life;i++) image(p2Sprites[1][0],width/3+30+30*i,height-90,24,24);
   fill(255,0,0);
-  textSize(22);
+  textFont(createFont("emulogic.ttf",22));
   if(players[0].life<=0) text("GAME OVER",30,height-70);
   if(players[1].life<=0) text("GAME OVER",width/3+30,height-70);
   fill(255);
+  textFont(createFont("emulogic.ttf",32));
   textSize(32);
   text("1P: "+players[0].score,30,height-30);
   text("2P: "+players[1].score,width/3+30,height-30);
+  textFont(createFont("emulogic.ttf",45));
   textSize(45);
   text((players[0].score+players[1].score),2*width/3+60,height-40);
 }
 void loadMap() {
-  String[] lines = loadStrings("map.txt");
+  String[] lines = loadStrings("map"+((int)(random(2))+1)+".txt");
   String[] locs = lines[1].split(" ");
   String[] sizes = lines[0].split(" ");
   CELL_W=int(sizes[0]);
@@ -150,4 +152,9 @@ void checkCollision(Player p) {
 int blinkTimeRemaining() {
   long timeDiff = blinkEndTime-System.nanoTime();
   return timeDiff<0?-1:(int)(timeDiff/1000000);
+}
+boolean gameEnded() {
+  if((players[0].life+players[1].life)==0) return true;
+  if(foodCount==0) return true;
+  return false;
 }

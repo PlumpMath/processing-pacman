@@ -6,12 +6,15 @@ void settings() {
 }
 
 int currentMenu = 0; //0: Title, 1: Game
+boolean gameRunning=false;
+Button mainStartBtn; 
 
 void setup() {
   frameRate(30);
-  String[] args = {"Debug Window"};
-  DebugApplet sa = new DebugApplet();
-  PApplet.runSketch(args, sa);
+  setupTitle();
+  //String[] args = {"Debug Window"};
+  //DebugApplet sa = new DebugApplet();
+  //PApplet.runSketch(args, sa);
 }
 void draw() {
   if(currentMenu==0) drawTitle();
@@ -25,39 +28,42 @@ void setCurrentMenu(int m) {
 }
 void setupPacmanGame() {
   setupGame();
+  gameRunning=true;
 }
 void setupTitle() {
-  
+  mainStartBtn = new Button(0.4*width,0.45*height,0.2*width,0.1*height, new ButtonClick() {
+     public void Clicked() {
+       setCurrentMenu(1); 
+     }
+  });
 }
 void drawTitle() {
   background(0);
-  rectMode(CORNER);
-  fill(0,0,255);
-  noStroke();
-  rect(0.4*width,0.45*height,0.2*width,0.1*height);
-  fill(255);
+  mainStartBtn.drawBtn();
   textSize(48);
   text("Start",0.46*width,0.51*height);
 }
 void drawPacmanGame() {
-  try {
-    background(0);
-    gameTick();
-    if(showCheckboard) drawChessBoard(); 
-    drawPlayerInfo();
-    drawGame();
-    drawUI();
-  } catch(Exception e) {
-    e.printStackTrace(); 
-  }  
+  if(gameRunning) {
+    try {
+      background(0);
+      gameTick();
+      if(showCheckboard) drawChessBoard(); 
+      drawPlayerInfo();
+      drawGame();
+      drawUI();
+      if(gameEnded()) gameRunning=false;
+    } catch(Exception e) {
+      e.printStackTrace(); 
+    }  
+  } else {
+    textFont(createFont("emulogic.ttf",60));
+    fill(255,0,0);
+    text("GAME OVER",0.4*height,0.4*width);
+  }
 }
 void mouseClicked() {
-  if(currentMenu==0) {
-    float xRatio=mouseX*1.0/width, yRatio=mouseY*1.0/height;
-    if(xRatio>=0.4&&xRatio<=0.6&&yRatio>=0.45&&yRatio<=0.55) {
-      setCurrentMenu(1); 
-    }
-  }
+  if(currentMenu == 0) mainStartBtn.checkAndHandleClick(mouseX, mouseY);
 }
 void keyPressed() {
   if(currentMenu==1) {
@@ -73,25 +79,4 @@ void keyPressed() {
     else if(keyCode==DOWN) players[1].changeDirection(2);
     else if(keyCode==LEFT) players[1].changeDirection(3);
   }
-  /*
-  switch(key) {
-    case 'c':
-      showCheckboard = !showCheckboard;
-      break;
-    case UP:
-      player.changeDirection(0);
-      break;
-    case RIGHT:
-      player.changeDirection(1);
-      break;
-    case DOWN:
-      player.changeDirection(2);
-      break;
-    case LEFT:
-      player.changeDirection(3);
-      break;
-    default:
-      break;
-  }
-  */
 }

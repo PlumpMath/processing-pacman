@@ -13,14 +13,6 @@ void drawPlayerInfo() {
   fill(10);
   rect(180,620,380,300);
   fill(230);
-  //text("     player.x: "+player.x,200,400);
-  //text("   player.dir: "+player.direction,200,420);
-  //text("     player.y: "+player.y,200,440);
-  //text("player.moving: "+(player.moving?"True":"False"),200,460);
-  //text(" player.score: "+player.score,200,480);
-  //text("    blinkTime: "+blinkTimeRemaining()+"ms",200,500);
-  //text(System.nanoTime(),200,320);
-  //text(ghosts[0].direction,200,520);
 }
 void drawSprite(PImage img, float x, float y) {
   imageMode(CENTER);
@@ -179,7 +171,7 @@ int getMoveAwayDirection(int startX, int startY, int endX, int endY) {
       }
     }
   }
-  return -1; //<>//
+  return -1; //<>// //<>// //<>// //<>//
 }
 int getDistance(int startX, int startY, int endX, int endY) {
   ArrayList<int[]> ret = new ArrayList<int[]>();
@@ -207,7 +199,7 @@ int getDistance(int startX, int startY, int endX, int endY) {
       }
     }
   }
-  return -1; //<>//
+  return -1; //<>// //<>// //<>// //<>//
 }
 int getPlayerMinDistance(int startX, int startY) {
   ArrayList<int[]> ret = new ArrayList<int[]>();
